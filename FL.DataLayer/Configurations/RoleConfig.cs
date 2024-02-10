@@ -21,5 +21,9 @@ internal class RoleConfig : IEntityTypeConfiguration<Role> {
 
 		builder.Property(e => e.LastUpdateTime)
 			.IsRequired();
+
+		builder.HasMany(e => e.Permissions)
+			.WithMany()
+			.UsingEntity(j => j.ToTable("RolesPermissions"));
 	}
 }

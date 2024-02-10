@@ -1,4 +1,6 @@
+using FL.Commons.Configurations;
 using FL.DataLayer;
+using FL.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FL.Service;
@@ -15,9 +17,13 @@ public class Program {
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();
 
-		builder.Services.AddDbContext<FLDbContext>(options => {
-			options.UseSqlServer("");
-		});
+		ConnectionStrings? connectionStrings = builder.Configuration.GetRequiredSection("ConnectionStrings").Get<ConnectionStrings>();
+		if(connectionStrings is null) {
+			throw new ArgumentNullException(nameof(connectionStrings));
+		}
+		
+		builder.Services.AddFLDbContext(connectionStrings.DefaultConnection);
+		builder.Services.AddRepositories();
 		
 		var app = builder.Build();
 
@@ -33,6 +39,8 @@ public class Program {
 		app.UseAuthentication();
 		app.UseAuthorization();
 
+		app.MapGet("/users", (IUsersRepository repo) => repo.GetUsers());
+		
 		app.Run();
 	}
 }

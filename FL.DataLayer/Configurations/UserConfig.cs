@@ -31,5 +31,9 @@ internal class UserConfig : IEntityTypeConfiguration<User> {
 		
 		builder.Property(e => e.LastUpdateTime)
 			.IsRequired();
+		
+		builder.HasMany(e => e.Roles)
+			.WithMany()
+			.UsingEntity(j => j.ToTable("UserRoles"));
 	}
 }
